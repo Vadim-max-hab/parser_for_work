@@ -1,1 +1,3 @@
 # Формат: name|https://example.com/page
+FL.ru|https://FL.ru
+work-zilla.com|https://work-zilla.com/freelance-jobs/development-and-it/chatbot-development/developing-bot-in-telegram-on-python

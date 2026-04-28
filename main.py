@@ -142,6 +142,7 @@ def clean_text(text, limit=1200):
 
 STRICT_DEV_PHRASES = [
     "telegram-бот", "телеграм-бот", "чат-бот", "chat-bot", "chatbot",
+    "телеграм бота", "telegram бота", "разработка бота", "создание бота", "доработка бота", "написать бота", "сделать телеграм бота", "создать телеграм бота", "разработать телеграм бота",
     "бот для", "бота для", "бот под", "бота под",
     "нужен бот", "нужен телеграм", "нужен telegram",
     "сделать бот", "создать бот", "разработать бот", "собрать бот",
@@ -174,6 +175,40 @@ STRICT_CONTENT_BLOCK = [
 ]
 
 
+
+STRICT_OFFER_BLOCK = [
+    "фрилансер готов",
+    "готов решать задачи",
+    "готов выполнить",
+    "готов взяться",
+    "оказываю услуги",
+    "предлагаю услуги",
+    "мои услуги",
+    "услуги разработки",
+    "сайт под ключ дизайн",
+    "верстка сайт под ключ",
+    "закажите все в одном месте",
+    "закажите всё в одном месте",
+    "с гарантией",
+    "портфолио",
+    "20 лет опыта",
+    "10 лет опыта",
+    "работаю с крупными проектами",
+    "коммерческой разработки",
+    "тел ",
+    "тел:",
+    "tg ",
+    "tg:",
+    "whatsapp",
+    "ватсап",
+    "telegram:",
+    "пишите в личку",
+    "пишите в лс",
+    "обращайтесь",
+    "буду рад сотрудничеству",
+]
+
+
 def strict_contains_any(lower, phrases):
     return any(phrase in lower for phrase in phrases)
 
@@ -197,6 +232,23 @@ def is_relevant(text):
     if strict_contains_any(lower, STRICT_CONTENT_BLOCK):
         return False
 
+    # Предложения услуг от исполнителей тоже не берём.
+    # Нам нужны заявки клиентов, а не реклама фрилансеров.
+    if strict_contains_any(lower, STRICT_OFFER_BLOCK):
+        return False
+
+    # Не пропускаем тексты, где исполнитель рекламирует себя.
+    seller_markers = [
+        "я занимаюсь", "я делаю", "я разрабатываю", "мы делаем",
+        "мы разрабатываем", "наша команда", "моя команда",
+        "помогаю бизнесу", "помогаю с", "готов помочь",
+        "фрилансер", "исполнитель"
+    ]
+
+    if strict_contains_any(lower, seller_markers):
+        if not any(x in lower for x in ["нужен", "нужно", "ищу", "требуется", "задача", "проект"]):
+            return False
+
     # Просто слова "ИИ" или "нейросеть" больше не считаются заявкой.
     # Нужен явный признак разработки: бот, парсер, API, интеграция, GPT, RAG и т.д.
     if not strict_contains_any(lower, STRICT_DEV_PHRASES):
@@ -212,6 +264,20 @@ def calculate_score(text):
 
     if strict_contains_any(lower, STRICT_CONTENT_BLOCK):
         return 1
+
+    if strict_contains_any(lower, STRICT_OFFER_BLOCK):
+        return 1
+
+    seller_markers = [
+        "я занимаюсь", "я делаю", "я разрабатываю", "мы делаем",
+        "мы разрабатываем", "наша команда", "моя команда",
+        "помогаю бизнесу", "помогаю с", "готов помочь",
+        "фрилансер", "исполнитель"
+    ]
+
+    if strict_contains_any(lower, seller_markers):
+        if not any(x in lower for x in ["нужен", "нужно", "ищу", "требуется", "задача", "проект"]):
+            return 1
 
     hits = strict_count_hits(lower, STRICT_DEV_PHRASES)
 
@@ -733,8 +799,96 @@ def web_sources_text():
     return "🌐 Веб-источники:\n\n" + "\n".join(lines)
 
 
+
+
+
+def parse_habr_freelance(name, url, limit=60):
+    from urllib.parse import urljoin
+
+    headers = {
+        "User-Agent": "Mozilla/5.0 Android LeadHunterAI"
+    }
+
+    response = requests.get(url, headers=headers, timeout=30)
+
+    if response.status_code != 200:
+        print(f"[!] Habr Freelance {name}: статус {response.status_code}")
+        return []
+
+    soup = BeautifulSoup(response.text, "html.parser")
+    items = []
+
+    # Основной вариант: карточки задач
+    task_blocks = soup.select("article.task, article.task_list, .task, .task_list")
+
+    # Если верстка поменялась — запасной вариант: ссылки на /tasks/ID
+    if not task_blocks:
+        task_links = []
+
+        for a in soup.find_all("a", href=True):
+            href = a.get("href", "")
+
+            if "/tasks/" not in href:
+                continue
+
+            link = urljoin(url, href)
+            title = a.get_text(" ", strip=True)
+
+            if len(title) < 10:
+                continue
+
+            parent_text = ""
+            if a.parent:
+                parent_text = a.parent.get_text(" ", strip=True)
+
+            text_value = parent_text if len(parent_text) > len(title) else title
+            text_value = clean_text(text_value, limit=1200)
+
+            post_id = hashlib.md5(link.encode("utf-8")).hexdigest()[:12]
+
+            task_links.append({
+                "source": f"web:{name}",
+                "post_id": post_id,
+                "text": text_value,
+                "url": link,
+            })
+
+            if len(task_links) >= limit:
+                break
+
+        return task_links
+
+    for block in task_blocks[:limit]:
+        link = url
+
+        a = block.find("a", href=True)
+        if a:
+            link = urljoin(url, a.get("href"))
+
+        text_value = block.get_text(" ", strip=True)
+        text_value = clean_text(text_value, limit=1200)
+
+        if len(text_value) < 40:
+            continue
+
+        post_id = hashlib.md5(link.encode("utf-8")).hexdigest()[:12]
+
+        items.append({
+            "source": f"web:{name}",
+            "post_id": post_id,
+            "text": text_value,
+            "url": link,
+        })
+
+    return items
+
+
 def parse_web_source(name, url, limit=60):
     from urllib.parse import urljoin
+    import feedparser
+
+    if "freelance.habr.com/tasks" in url:
+        return parse_habr_freelance(name, url, limit=limit)
 
     headers = {
         "User-Agent": "Mozilla/5.0 Android LeadHunterAI"
@@ -746,9 +900,51 @@ def parse_web_source(name, url, limit=60):
         print(f"[!] Web source {name}: статус {response.status_code}")
         return []
 
-    soup = BeautifulSoup(response.text, "html.parser")
+    content_type = response.headers.get("content-type", "").lower()
+    body_start = response.text[:300].lower()
 
     items = []
+
+    # RSS / Atom через feedparser
+    looks_like_feed = (
+        "xml" in content_type
+        or "rss" in content_type
+        or "<rss" in body_start
+        or "<feed" in body_start
+        or "<item" in body_start
+        or "<entry" in body_start
+    )
+
+    if looks_like_feed or "rss" in url.lower():
+        feed = feedparser.parse(response.content)
+
+        if feed.entries:
+            for entry in feed.entries[:limit]:
+                title = getattr(entry, "title", "") or ""
+                summary = getattr(entry, "summary", "") or getattr(entry, "description", "") or ""
+                link = getattr(entry, "link", "") or url
+
+                combined = clean_text((title + "\n" + summary).strip(), limit=1200)
+
+                if len(combined) < 40:
+                    continue
+
+                post_id = hashlib.md5((link or combined).encode("utf-8")).hexdigest()[:12]
+
+                items.append({
+                    "source": f"web:{name}",
+                    "post_id": post_id,
+                    "text": combined,
+                    "url": link,
+                })
+
+            return items
+
+        print(f"[!] {name}: feedparser не нашёл entries. content-type={content_type}, start={response.text[:120]!r}")
+        return []
+
+    # Обычный HTML-режим
+    soup = BeautifulSoup(response.text, "html.parser")
     seen_links = set()
 
     for a in soup.find_all("a", href=True):
@@ -1060,6 +1256,7 @@ def get_stats_text():
 
 
 
+
 def main_menu_keyboard():
     return {
         "keyboard": [
@@ -1068,12 +1265,12 @@ def main_menu_keyboard():
                 {"text": "🌐 Веб-скан"},
             ],
             [
-                {"text": "📌 Каналы"},
+                {"text": "🧪 Диагностика"},
                 {"text": "🌐 Источники"},
             ],
             [
+                {"text": "📌 Каналы"},
                 {"text": "📊 Статистика"},
-                {"text": "❓ Помощь"},
             ],
             [
                 {"text": "➕ Добавить канал"},
@@ -1082,6 +1279,9 @@ def main_menu_keyboard():
             [
                 {"text": "➕ Добавить источник"},
                 {"text": "➖ Удалить источник"},
+            ],
+            [
+                {"text": "❓ Помощь"},
             ],
         ],
         "resize_keyboard": True,
@@ -1096,8 +1296,9 @@ def help_text():
         "Кнопки:\n"
         "🔎 Скан — скан Telegram-каналов\n"
         "🌐 Веб-скан — скан сайтов/страниц\n"
-        "📌 Каналы — список Telegram-каналов\n"
+        "🧪 Диагностика — показать, что бот видит на веб-источниках и почему отсекает\n"
         "🌐 Источники — список веб-источников\n"
+        "📌 Каналы — список Telegram-каналов\n"
         "📊 Статистика — статистика\n"
         "➕ Добавить канал — добавить Telegram-канал\n"
         "➖ Удалить канал — удалить Telegram-канал\n"
@@ -1108,6 +1309,8 @@ def help_text():
         "Команды:\n"
         "/scan\n"
         "/webscan\n"
+        "/diagnose\n"
+        "/diagnose название_источника\n"
         "/channels\n"
         "/sources\n"
         "/add channelname\n"
@@ -1157,6 +1360,153 @@ def get_user_state(user_id):
 def clear_user_state(user_id):
     USER_STATE.pop(str(user_id), None)
 
+
+
+
+
+def diagnose_rejection_reason(text):
+    lower = text.lower()
+
+    if len(lower) < 50:
+        return "слишком короткий текст"
+
+    if any(word in lower for word in BAD_KEYWORDS):
+        return "опасные/запрещённые ключевые слова"
+
+    if strict_contains_any(lower, STRICT_HARD_BLOCK):
+        return "похоже на вакансию, HR, продажи или работу в найм"
+
+    if strict_contains_any(lower, STRICT_CONTENT_BLOCK):
+        return "похоже на контент, копирайтинг, SMM, дизайн или медиа"
+
+    if strict_contains_any(lower, STRICT_OFFER_BLOCK):
+        return "похоже на рекламу услуг исполнителя, а не заявку клиента"
+
+    seller_markers = [
+        "я занимаюсь", "я делаю", "я разрабатываю", "мы делаем",
+        "мы разрабатываем", "наша команда", "моя команда",
+        "помогаю бизнесу", "помогаю с", "готов помочь",
+        "фрилансер", "исполнитель"
+    ]
+
+    if strict_contains_any(lower, seller_markers):
+        if not any(x in lower for x in ["нужен", "нужно", "ищу", "требуется", "задача", "проект"]):
+            return "похоже, исполнитель предлагает свои услуги"
+
+    if not strict_contains_any(lower, STRICT_DEV_PHRASES):
+        return "нет явного запроса на разработку, бота, парсер, API или автоматизацию"
+
+    score = calculate_score(text)
+
+    if score < 5:
+        return f"низкая оценка: {score}/10"
+
+    return "должно проходить фильтр"
+
+def diagnose_web_sources(target=None, max_items_per_source=8):
+    sources = load_web_sources()
+
+    if not sources:
+        send_message(
+            "🧪 Диагностика невозможна: веб-источников пока нет.\n\n"
+            "Добавь источник кнопкой ➕ Добавить источник.",
+            main_menu_keyboard()
+        )
+        return
+
+    if target:
+        target_lower = target.lower().strip()
+        sources = [
+            item for item in sources
+            if target_lower in item["name"].lower() or target_lower in item["url"].lower()
+        ]
+
+        if not sources:
+            send_message(
+                f"🧪 Источник не найден: <code>{html.escape(target)}</code>\n\n"
+                "Нажми 🌐 Источники и проверь точное название.",
+                main_menu_keyboard()
+            )
+            return
+
+    send_message(
+        "🧪 Запускаю диагностику веб-источников...\n\n"
+        "Покажу, что бот увидел на странице и почему элементы проходят или отсекаются.",
+        main_menu_keyboard()
+    )
+
+    for item in sources:
+        name = item["name"]
+        url = item["url"]
+
+        try:
+            posts = parse_web_source(name, url, limit=40)
+        except Exception as e:
+            send_message(
+                f"🧪 <b>Диагностика: {html.escape(name)}</b>\n\n"
+                f"Ошибка чтения источника:\n<code>{html.escape(str(e))}</code>",
+                main_menu_keyboard()
+            )
+            continue
+
+        if not posts:
+            send_message(
+                f"🧪 <b>Диагностика: {html.escape(name)}</b>\n\n"
+                f"URL: {html.escape(url)}\n\n"
+                "Бот не нашёл текстовых элементов.\n\n"
+                "Возможные причины:\n"
+                "— страница грузит данные через JavaScript;\n"
+                "— нужен вход в аккаунт;\n"
+                "— сайт защищён от парсинга;\n"
+                "— на странице нет ссылок с текстом.",
+                main_menu_keyboard()
+            )
+            continue
+
+        header = (
+            f"🧪 <b>Диагностика: {html.escape(name)}</b>\n\n"
+            f"URL: {html.escape(url)}\n"
+            f"Найдено элементов: {len(posts)}\n"
+            f"Показываю первые: {min(len(posts), max_items_per_source)}\n\n"
+        )
+
+        chunks = []
+        current = header
+
+        for idx, post in enumerate(posts[:max_items_per_source], start=1):
+            raw_text = post["text"]
+            score = calculate_score(raw_text)
+            passed = is_relevant(raw_text) and score >= 5
+
+            if passed:
+                decision = "✅ проходит фильтр"
+                reason = "похоже на подходящую IT/AI-задачу"
+            else:
+                decision = "❌ отсеяно"
+                reason = diagnose_rejection_reason(raw_text)
+
+            sample = clean_text(raw_text, limit=450)
+            link = post.get("url", "")
+
+            block = (
+                f"<b>{idx}. {decision}</b>\n"
+                f"Оценка: {score}/10\n"
+                f"Причина: {html.escape(reason)}\n"
+                f"Ссылка: {html.escape(link)}\n"
+                f"Текст:\n<code>{html.escape(sample)}</code>\n\n"
+            )
+
+            if len(current) + len(block) > 3500:
+                chunks.append(current)
+                current = ""
+
+            current += block
+
+        if current.strip():
+            chunks.append(current)
+
+        for chunk in chunks:
+            send_message(chunk, main_menu_keyboard())
 
 
 
@@ -1238,6 +1588,15 @@ def handle_text_command(message):
         scan_web_sources()
         return
 
+    if text in ["/diagnose", "🧪 Диагностика"]:
+        diagnose_web_sources()
+        return
+
+    if text.startswith("/diagnose "):
+        target = text.replace("/diagnose", "", 1).strip()
+        diagnose_web_sources(target=target)
+        return
+
     if text == "➕ Добавить канал":
         set_user_state(user_id, "wait_add_channel")
         send_message(
@@ -1317,7 +1676,6 @@ def handle_text_command(message):
         send_message(("✅ " if ok else "⚠️ ") + msg, main_menu_keyboard())
         return
 
-    # Вариант 3: любой обычный текст считаем заявкой для ручного анализа.
     if len(text) >= 20:
         send_manual_analysis(text)
         return
