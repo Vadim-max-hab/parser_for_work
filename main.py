@@ -296,46 +296,114 @@ def detect_risks(text):
     return "; ".join(risks)
 
 
+
+
+
 def generate_reply(text, category):
     lower = text.lower()
 
     if "бот" in lower or "telegram" in lower or "телеграм" in lower:
         return (
-            "Здравствуйте. Могу собрать Telegram-бота под вашу задачу.\n\n"
-            "Сделаю понятную структуру: меню, кнопки, сценарии, сбор заявок и уведомления. "
-            "Сначала уточню логику, затем соберу рабочую версию, покажу тест и внесу правки.\n\n"
-            "Готов обсудить детали и предложить оптимальную реализацию."
+            "Здравствуйте! Могу сделать такого Telegram-бота под ключ.\n\n"
+            "Помогу продумать меню, кнопки, приём заявок и уведомления. "
+            "Соберу рабочий вариант, покажу как всё работает и объясню, как пользоваться.\n\n"
+            "Пришлите, пожалуйста, какие разделы должны быть в боте и куда отправлять заявки."
         )
 
-    if "ai" in lower or "ии" in lower or "нейросеть" in lower or "gpt" in lower:
+    if "openai" in lower or "chatgpt" in lower or "gpt" in lower or "ai-агент" in lower or "ии-агент" in lower or "база знаний" in lower:
         return (
-            "Здравствуйте. Могу помочь с AI-решением под вашу задачу.\n\n"
-            "Сначала разберу сценарий, затем предложу простую рабочую архитектуру: база знаний, "
-            "логика ответов, интеграция с Telegram/таблицами/CRM при необходимости.\n\n"
-            "Готов быстро обсудить детали."
+            "Здравствуйте! Могу сделать такого AI-бота под ключ.\n\n"
+            "Помогу настроить ответы, добавить нужную информацию и сделать так, чтобы бот был понятен для клиентов. "
+            "Сначала соберу простой рабочий вариант, потом можно будет доработать детали.\n\n"
+            "Пришлите, пожалуйста, что бот должен знать и на какие вопросы отвечать."
         )
 
-    if "парсер" in lower or "скрипт" in lower or "python" in lower:
+    if "парсер" in lower or "парсинг" in lower or "скрипт" in lower or "python" in lower:
         return (
-            "Здравствуйте. Могу сделать Python-скрипт/парсер под вашу задачу.\n\n"
-            "Уточню источник данных, формат результата и ограничения, после этого соберу рабочую версию "
-            "и передам понятную инструкцию по запуску.\n\n"
-            "Готов обсудить детали."
+            "Здравствуйте! Могу сделать под ключ.\n\n"
+            "Соберу данные с нужного сайта и отдам результат в удобном виде: таблица, CSV, Google Sheets или сообщение в Telegram.\n\n"
+            "Пришлите ссылку на сайт и пример, какие данные нужно получить."
         )
 
-    if "карточк" in lower or "wb" in lower or "ozon" in lower:
+    if "api" in lower or "crm" in lower or "интеграц" in lower or "автоматизац" in lower or "webhook" in lower:
         return (
-            "Здравствуйте. Могу помочь с карточками для маркетплейса.\n\n"
-            "Могу разобрать текущую карточку, предложить улучшение визуала, структуры смыслов, "
-            "SEO и подготовить более продающую подачу.\n\n"
-            "Готов посмотреть товар и предложить конкретный план."
+            "Здравствуйте! Могу настроить это под ключ.\n\n"
+            "Сделаю так, чтобы данные автоматически передавались куда нужно: в Telegram, таблицу, CRM или другой сервис. "
+            "После настройки покажу, как всё работает.\n\n"
+            "Пришлите, пожалуйста, какие сервисы нужно связать между собой."
+        )
+
+    if "сайт" in lower or "лендинг" in lower or "wordpress" in lower:
+        return (
+            "Здравствуйте! Могу сделать сайт под ключ.\n\n"
+            "Соберу понятную страницу с нужными блоками, кнопками и формой заявки. "
+            "Сделаю так, чтобы клиенту было понятно, что вы предлагаете и как с вами связаться.\n\n"
+            "Пришлите пример сайта, который нравится, и что нужно разместить на странице."
+        )
+
+    if "карточк" in lower or "wb" in lower or "ozon" in lower or "wildberries" in lower:
+        return (
+            "Здравствуйте! Могу сделать карточку товара под ключ.\n\n"
+            "Помогу улучшить первый слайд, подачу преимуществ, текст и визуал, чтобы карточка выглядела сильнее и понятнее для покупателя.\n\n"
+            "Пришлите ссылку на товар — посмотрю и предложу, что лучше усилить."
         )
 
     return (
-        f"Здравствуйте. Могу выполнить задачу по направлению: {category}.\n\n"
-        "Работаю с Telegram-ботами, автоматизацией, парсерами, AI-решениями и упаковкой услуг. "
-        "Могу быстро разобрать задачу, предложить структуру и собрать рабочую версию.\n\n"
-        "Готов обсудить детали."
+        "Здравствуйте! Могу взять задачу под ключ.\n\n"
+        "Сначала уточню детали, потом соберу рабочий вариант и покажу, как всё работает. "
+        "Без лишнего усложнения — сделаю так, чтобы было понятно и удобно пользоваться.\n\n"
+        "Пришлите, пожалуйста, что есть сейчас и какой результат хотите получить."
+    )
+
+
+def generate_reply_alt(text, category):
+    lower = text.lower()
+
+    if "бот" in lower or "telegram" in lower or "телеграм" in lower:
+        return (
+            "Здравствуйте. Сделаю Telegram-бота под ключ: меню, кнопки, приём заявок и уведомления.\n\n"
+            "Могу сам предложить удобную структуру, собрать рабочую версию и показать, как ей пользоваться. "
+            "После теста внесу правки, если что-то нужно будет изменить.\n\n"
+            "Готов обсудить задачу. Для оценки пришлите, пожалуйста, какие функции точно нужны в боте."
+        )
+
+    if "openai" in lower or "chatgpt" in lower or "gpt" in lower or "ai-агент" in lower or "ии-агент" in lower or "база знаний" in lower:
+        return (
+            "Здравствуйте. Могу сделать AI-бота под ключ.\n\n"
+            "Настрою ответы, добавлю нужную информацию, сделаю понятную логику и покажу, как пользоваться. "
+            "Без лишнего усложнения — сначала рабочий вариант, потом доработка деталей.\n\n"
+            "Готов обсудить. Пришлите, пожалуйста, пример вопросов, на которые должен отвечать бот."
+        )
+
+    if "парсер" in lower or "парсинг" in lower or "скрипт" in lower or "python" in lower:
+        return (
+            "Здравствуйте. Могу сделать парсер/скрипт под ключ.\n\n"
+            "Соберу нужные данные и отдам в удобном формате: таблица, CSV, Google Sheets или уведомления в Telegram. "
+            "Также объясню, как запускать и пользоваться.\n\n"
+            "Пришлите ссылку на источник и пример результата, который хотите получить."
+        )
+
+    if "api" in lower or "crm" in lower or "интеграц" in lower or "автоматизац" in lower or "webhook" in lower:
+        return (
+            "Здравствуйте. Могу настроить автоматизацию под ключ.\n\n"
+            "Свяжу нужные сервисы, проверю передачу данных и покажу, как всё работает. "
+            "Сделаю простой и понятный вариант без лишних сложностей.\n\n"
+            "Напишите, пожалуйста, какие сервисы нужно связать и что должно происходить после заявки."
+        )
+
+    if "сайт" in lower or "лендинг" in lower or "wordpress" in lower:
+        return (
+            "Здравствуйте. Могу сделать сайт/лендинг под ключ.\n\n"
+            "Соберу структуру, первый экран, блоки, кнопки и форму заявки. "
+            "Сделаю так, чтобы страница выглядела понятно и помогала получать обращения.\n\n"
+            "Пришлите, пожалуйста, пример сайта, который нравится, и что нужно разместить."
+        )
+
+    return (
+        f"Здравствуйте. Готов взять задачу под ключ по направлению: {category}.\n\n"
+        "Разберу, что нужно сделать, предложу простой план и соберу рабочий вариант. "
+        "После этого покажу, как пользоваться, и внесу правки при необходимости.\n\n"
+        "Пришлите, пожалуйста, чуть больше деталей по задаче."
     )
 
 
@@ -415,6 +483,7 @@ def analyze_post(post):
     }
 
 
+
 def format_card(lead):
     score = lead["score"]
 
@@ -427,7 +496,8 @@ def format_card(lead):
             verdict = "🔴 слабая заявка, осторожно"
 
     text = clean_text(lead["text"])
-    reply = clean_text(lead["reply"], limit=1000)
+    reply_short = clean_text(lead["reply"], limit=1000)
+    reply_alt = clean_text(generate_reply_alt(lead["text"], lead["category"]), limit=1000)
 
     return (
         "<b>🔥 Найдена заявка</b>\n\n"
@@ -438,9 +508,11 @@ def format_card(lead):
         f"<b>Цена:</b> {html.escape(lead['price'])}\n"
         f"<b>Риски:</b> {html.escape(lead['risks'])}\n\n"
         f"<b>Текст заявки:</b>\n{html.escape(text)}\n\n"
-        f"<b>Готовый отклик:</b>\n<code>{html.escape(reply)}</code>\n\n"
-        "<i>Открой заявку, скопируй отклик и отправь вручную.</i>"
+        f"<b>Отклик короткий:</b>\n<code>{html.escape(reply_short)}</code>\n\n"
+        f"<b>Отклик увереннее:</b>\n<code>{html.escape(reply_alt)}</code>\n\n"
+        "<i>Выбери вариант, скопируй и отправь вручную.</i>"
     )
+
 
 def send_message(text, keyboard=None):
     url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
@@ -455,11 +527,321 @@ def send_message(text, keyboard=None):
     if keyboard:
         payload["reply_markup"] = keyboard
 
-    response = requests.post(url, json=payload, timeout=20)
+    try:
+        response = requests.post(url, json=payload, timeout=60)
+
+        if response.status_code != 200:
+            print("[!] Ошибка отправки:", response.text)
+            return False
+
+        return True
+
+    except requests.exceptions.Timeout:
+        print("[!] Telegram API timeout при отправке сообщения")
+        return False
+
+    except requests.exceptions.ConnectionError as e:
+        print("[!] Нет соединения с Telegram API:", e)
+        return False
+
+    except Exception as e:
+        print("[!] Неожиданная ошибка отправки:", e)
+        return False
+
+
+
+WEB_SOURCES_FILE = "web_sources.txt"
+
+
+def extract_first_url(text):
+    match = re.search(r"https?://[^\s]+", text)
+    if not match:
+        return None
+
+    return match.group(0).strip(").,]")
+
+
+def manual_keyboard(lead):
+    buttons = []
+
+    if lead.get("url"):
+        buttons.append([
+            {"text": "🚀 Открыть ссылку", "url": lead["url"]}
+        ])
+
+    buttons.append([
+        {"text": "✅ Подходит", "callback_data": f"good:{lead['lead_id']}"},
+        {"text": "🗑 Мусор", "callback_data": f"trash:{lead['lead_id']}"},
+    ])
+
+    buttons.append([
+        {"text": "✍️ Другой отклик", "callback_data": f"alt:{lead['lead_id']}"},
+    ])
+
+    return {"inline_keyboard": buttons}
+
+
+def send_manual_analysis(raw_text):
+    text = raw_text.strip()
+
+    if len(text) < 20:
+        send_message("Пришли более полный текст заявки или ссылку.", main_menu_keyboard())
+        return
+
+    url = extract_first_url(text)
+    source = "manual"
+    post_id = str(int(time.time()))
+    lead_id = make_lead_id(source, post_id, text)
+
+    category = detect_category(text)
+    score = calculate_score(text)
+    relevant = is_relevant(text)
+
+    if not relevant:
+        score = min(score, 4)
+
+    lead = {
+        "lead_id": lead_id,
+        "source": source,
+        "post_id": post_id,
+        "text": text,
+        "url": url or "",
+        "score": score,
+        "category": category,
+        "price": suggest_price(text),
+        "risks": detect_risks(text),
+        "reply": generate_reply(text, category),
+    }
+
+    save_lead(lead)
+
+    verdict = "✅ Похоже на подходящую заявку" if relevant else "⚠️ Похоже, не наш формат / нужен ручной просмотр"
+
+    message = (
+        "<b>🧪 Ручной анализ заявки</b>\n\n"
+        f"<b>Вывод:</b> {html.escape(verdict)}\n\n"
+        + format_card(lead)
+    )
+
+    send_message(message, manual_keyboard(lead))
+
+
+def load_web_sources():
+    if not os.path.exists(WEB_SOURCES_FILE):
+        with open(WEB_SOURCES_FILE, "w", encoding="utf-8") as f:
+            f.write("# Формат: name|https://example.com/page\n")
+        return []
+
+    sources = []
+
+    with open(WEB_SOURCES_FILE, "r", encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+
+            if not line or line.startswith("#"):
+                continue
+
+            if "|" in line:
+                name, url = line.split("|", 1)
+            else:
+                url = line
+                name = url.replace("https://", "").replace("http://", "").split("/")[0]
+
+            name = name.strip()
+            url = url.strip()
+
+            if name and url:
+                sources.append({"name": name, "url": url})
+
+    return sources
+
+
+def save_web_sources(sources):
+    with open(WEB_SOURCES_FILE, "w", encoding="utf-8") as f:
+        f.write("# Формат: name|https://example.com/page\n")
+
+        for item in sources:
+            f.write(f"{item['name']}|{item['url']}\n")
+
+
+def normalize_source_input(raw):
+    raw = raw.strip()
+
+    if "|" in raw:
+        name, url = raw.split("|", 1)
+        return name.strip(), url.strip()
+
+    url = raw
+
+    if not url.startswith("http://") and not url.startswith("https://"):
+        url = "https://" + url
+
+    name = url.replace("https://", "").replace("http://", "").split("/")[0]
+    return name.strip(), url.strip()
+
+
+def add_web_source(raw):
+    name, url = normalize_source_input(raw)
+
+    if not name or not url:
+        return False, "Не понял источник. Формат: name|https://site.ru/page"
+
+    sources = load_web_sources()
+
+    for item in sources:
+        if item["name"] == name or item["url"] == url:
+            return False, f"Источник {name} уже есть."
+
+    sources.append({"name": name, "url": url})
+    save_web_sources(sources)
+
+    return True, f"Источник добавлен: {name}"
+
+
+def remove_web_source(raw):
+    name, url = normalize_source_input(raw)
+    sources = load_web_sources()
+
+    new_sources = [
+        item for item in sources
+        if item["name"] != name and item["url"] != url
+    ]
+
+    if len(new_sources) == len(sources):
+        return False, f"Источник не найден: {name}"
+
+    save_web_sources(new_sources)
+    return True, f"Источник удалён: {name}"
+
+
+def web_sources_text():
+    sources = load_web_sources()
+
+    if not sources:
+        return (
+            "🌐 Веб-источников пока нет.\n\n"
+            "Добавь источник кнопкой ➕ Добавить источник.\n"
+            "Формат:\n"
+            "<code>name|https://site.ru/page</code>"
+        )
+
+    lines = [
+        f"{i + 1}. {item['name']} — {item['url']}"
+        for i, item in enumerate(sources)
+    ]
+
+    return "🌐 Веб-источники:\n\n" + "\n".join(lines)
+
+
+def parse_web_source(name, url, limit=60):
+    from urllib.parse import urljoin
+
+    headers = {
+        "User-Agent": "Mozilla/5.0 Android LeadHunterAI"
+    }
+
+    response = requests.get(url, headers=headers, timeout=30)
 
     if response.status_code != 200:
-        print("[!] Ошибка отправки:", response.text)
+        print(f"[!] Web source {name}: статус {response.status_code}")
+        return []
 
+    soup = BeautifulSoup(response.text, "html.parser")
+
+    items = []
+    seen_links = set()
+
+    for a in soup.find_all("a", href=True):
+        href = a.get("href")
+        link = urljoin(url, href)
+
+        if link in seen_links:
+            continue
+
+        seen_links.add(link)
+
+        own_text = a.get_text(" ", strip=True)
+
+        parent_text = ""
+        if a.parent:
+            parent_text = a.parent.get_text(" ", strip=True)
+
+        combined = parent_text if len(parent_text) > len(own_text) else own_text
+        combined = clean_text(combined, limit=1000)
+
+        if len(combined) < 40:
+            continue
+
+        post_id = hashlib.md5(link.encode("utf-8")).hexdigest()[:12]
+
+        items.append({
+            "source": f"web:{name}",
+            "post_id": post_id,
+            "text": combined,
+            "url": link,
+        })
+
+        if len(items) >= limit:
+            break
+
+    return items
+
+
+def scan_web_sources():
+    sources = load_web_sources()
+
+    total_items = 0
+    sent_count = 0
+    lines = []
+
+    if not sources:
+        send_message(
+            "🌐 Веб-источников пока нет.\n\n"
+            "Нажми ➕ Добавить источник и отправь ссылку.",
+            main_menu_keyboard()
+        )
+        return 0
+
+    for item in sources:
+        name = item["name"]
+        url = item["url"]
+
+        print(f"[*] Web scan: {name} — {url}")
+
+        try:
+            posts = parse_web_source(name, url)
+        except Exception as e:
+            print(f"[!] Ошибка web source {name}: {e}")
+            lines.append(f"{name}: ошибка")
+            continue
+
+        total_items += len(posts)
+        before = sent_count
+
+        for post in posts:
+            lead = analyze_post(post)
+
+            if not lead:
+                continue
+
+            save_lead(lead)
+            send_lead(lead)
+            sent_count += 1
+
+            print(f"    [+] web-заявка: {lead['url']}, score={lead['score']}")
+
+        found = sent_count - before
+        lines.append(f"{name}: проверено {len(posts)}, заявок {found}")
+
+    report = (
+        "🌐 Веб-скан завершён\n\n"
+        f"Проверено элементов: {total_items}\n"
+        f"Найдено заявок: {sent_count}\n\n"
+        + "\n".join(lines)
+    )
+
+    send_message(report, main_menu_keyboard())
+    return sent_count
 
 
 def send_lead(lead):
@@ -471,6 +853,9 @@ def send_lead(lead):
             [
                 {"text": "✅ Подходит", "callback_data": f"good:{lead['lead_id']}"},
                 {"text": "🗑 Мусор", "callback_data": f"trash:{lead['lead_id']}"},
+            ],
+            [
+                {"text": "✍️ Другой отклик", "callback_data": f"alt:{lead['lead_id']}"},
             ],
             [
                 {"text": "🚫 Бан канала", "callback_data": f"ban:{lead['source']}"}
@@ -674,12 +1059,17 @@ def get_stats_text():
         return f"Не смог получить статистику: {e}"
 
 
+
 def main_menu_keyboard():
     return {
         "keyboard": [
             [
                 {"text": "🔎 Скан"},
+                {"text": "🌐 Веб-скан"},
+            ],
+            [
                 {"text": "📌 Каналы"},
+                {"text": "🌐 Источники"},
             ],
             [
                 {"text": "📊 Статистика"},
@@ -689,32 +1079,42 @@ def main_menu_keyboard():
                 {"text": "➕ Добавить канал"},
                 {"text": "➖ Удалить канал"},
             ],
+            [
+                {"text": "➕ Добавить источник"},
+                {"text": "➖ Удалить источник"},
+            ],
         ],
         "resize_keyboard": True,
         "one_time_keyboard": False,
     }
 
 
+
 def help_text():
     return (
         "🤖 AI Lead Hunter\n\n"
         "Кнопки:\n"
-        "🔎 Скан — запустить поиск заявок вручную\n"
-        "📌 Каналы — показать список каналов\n"
-        "📊 Статистика — посмотреть статистику\n"
-        "➕ Добавить канал — инструкция по добавлению\n"
-        "➖ Удалить канал — инструкция по удалению\n\n"
-        "Команды также работают вручную:\n"
-        "/scan — запустить скан\n"
-        "/channels — показать каналы\n"
-        "/add channelname — добавить канал\n"
-        "/remove channelname — удалить канал\n"
-        "/stats — статистика\n"
-        "/help — помощь\n\n"
-        "Примеры:\n"
-        "/add workzavr\n"
-        "/add https://t.me/theyseeku\n"
-        "/remove freelancechoice"
+        "🔎 Скан — скан Telegram-каналов\n"
+        "🌐 Веб-скан — скан сайтов/страниц\n"
+        "📌 Каналы — список Telegram-каналов\n"
+        "🌐 Источники — список веб-источников\n"
+        "📊 Статистика — статистика\n"
+        "➕ Добавить канал — добавить Telegram-канал\n"
+        "➖ Удалить канал — удалить Telegram-канал\n"
+        "➕ Добавить источник — добавить сайт/страницу\n"
+        "➖ Удалить источник — удалить сайт/страницу\n\n"
+        "Ручной анализ:\n"
+        "Просто отправь мне текст заявки или ссылку — я оценю её и подготовлю отклик.\n\n"
+        "Команды:\n"
+        "/scan\n"
+        "/webscan\n"
+        "/channels\n"
+        "/sources\n"
+        "/add channelname\n"
+        "/remove channelname\n"
+        "/add_source name|https://site.ru/page\n"
+        "/remove_source name\n"
+        "/stats\n"
     )
 
 
@@ -759,6 +1159,7 @@ def clear_user_state(user_id):
 
 
 
+
 def handle_text_command(message):
     chat_id = message["chat"]["id"]
     user_id = message.get("from", {}).get("id")
@@ -792,6 +1193,18 @@ def handle_text_command(message):
         send_message(("✅ " if ok else "⚠️ ") + msg, main_menu_keyboard())
         return
 
+    if current_state == "wait_add_source":
+        ok, msg = add_web_source(text)
+        clear_user_state(user_id)
+        send_message(("✅ " if ok else "⚠️ ") + msg, main_menu_keyboard())
+        return
+
+    if current_state == "wait_remove_source":
+        ok, msg = remove_web_source(text)
+        clear_user_state(user_id)
+        send_message(("✅ " if ok else "⚠️ ") + msg, main_menu_keyboard())
+        return
+
     if text in ["/start", "/help", "❓ Помощь"]:
         send_message(help_text(), main_menu_keyboard())
         return
@@ -807,30 +1220,38 @@ def handle_text_command(message):
         send_message("📌 Каналы в мониторинге:\n\n" + "\n".join(lines), main_menu_keyboard())
         return
 
+    if text in ["/sources", "🌐 Источники"]:
+        send_message(web_sources_text(), main_menu_keyboard())
+        return
+
     if text in ["/stats", "📊 Статистика"]:
         send_message(get_stats_text(), main_menu_keyboard())
         return
 
     if text in ["/scan", "🔎 Скан"]:
-        send_message("🔎 Запускаю ручной скан...", main_menu_keyboard())
+        send_message("🔎 Запускаю ручной скан Telegram-каналов...", main_menu_keyboard())
         run_once()
         return
 
-    if text in ["➕ Добавить канал"]:
+    if text in ["/webscan", "🌐 Веб-скан"]:
+        send_message("🌐 Запускаю веб-скан...", main_menu_keyboard())
+        scan_web_sources()
+        return
+
+    if text == "➕ Добавить канал":
         set_user_state(user_id, "wait_add_channel")
         send_message(
-            "➕ Отправь username канала или ссылку.\n\n"
+            "➕ Отправь username Telegram-канала или ссылку.\n\n"
             "Примеры:\n"
             "<code>workzavr</code>\n"
             "<code>@workzavr</code>\n"
             "<code>https://t.me/workzavr</code>\n\n"
-            "Важно: канал должен быть публичным.\n\n"
             "Для отмены напиши /cancel.",
             main_menu_keyboard()
         )
         return
 
-    if text in ["➖ Удалить канал"]:
+    if text == "➖ Удалить канал":
         channels = load_channels()
 
         if not channels:
@@ -848,6 +1269,30 @@ def handle_text_command(message):
         )
         return
 
+    if text == "➕ Добавить источник":
+        set_user_state(user_id, "wait_add_source")
+        send_message(
+            "➕ Отправь веб-источник.\n\n"
+            "Формат:\n"
+            "<code>name|https://site.ru/page</code>\n\n"
+            "Можно просто ссылку:\n"
+            "<code>https://site.ru/page</code>\n\n"
+            "Важно: только публичные страницы без авторизации.\n\n"
+            "Для отмены напиши /cancel.",
+            main_menu_keyboard()
+        )
+        return
+
+    if text == "➖ Удалить источник":
+        set_user_state(user_id, "wait_remove_source")
+        send_message(
+            web_sources_text() +
+            "\n\nОтправь название или ссылку источника для удаления.\n\n"
+            "Для отмены напиши /cancel.",
+            main_menu_keyboard()
+        )
+        return
+
     if text.startswith("/add "):
         channel = text.replace("/add", "", 1).strip()
         ok, msg = add_channel(channel)
@@ -860,11 +1305,27 @@ def handle_text_command(message):
         send_message(("✅ " if ok else "⚠️ ") + msg, main_menu_keyboard())
         return
 
+    if text.startswith("/add_source "):
+        raw = text.replace("/add_source", "", 1).strip()
+        ok, msg = add_web_source(raw)
+        send_message(("✅ " if ok else "⚠️ ") + msg, main_menu_keyboard())
+        return
+
+    if text.startswith("/remove_source "):
+        raw = text.replace("/remove_source", "", 1).strip()
+        ok, msg = remove_web_source(raw)
+        send_message(("✅ " if ok else "⚠️ ") + msg, main_menu_keyboard())
+        return
+
+    # Вариант 3: любой обычный текст считаем заявкой для ручного анализа.
+    if len(text) >= 20:
+        send_manual_analysis(text)
+        return
+
     send_message(
-        "Не понял команду. Нажми кнопку ❓ Помощь.",
+        "Не понял команду. Нажми кнопку ❓ Помощь или пришли текст заявки для анализа.",
         main_menu_keyboard()
     )
-
 
 
 def handle_callback(callback):
@@ -878,6 +1339,24 @@ def handle_callback(callback):
 
     if not is_owner_user(user_id):
         answer_callback(callback_id, "Доступ закрыт.", alert=True)
+        return
+
+
+    if data.startswith("alt:"):
+        lead_id = data.replace("alt:", "", 1).strip()
+        lead = get_lead_from_db(lead_id)
+
+        if not lead:
+            answer_callback(callback_id, "Не нашёл заявку в базе.", alert=True)
+            return
+
+        alt_reply = generate_reply_alt(lead["text"], lead["category"])
+
+        answer_callback(callback_id, "Сделал другой вариант отклика.")
+        send_message(
+            "<b>✍️ Другой вариант отклика</b>\n\n"
+            f"<code>{html.escape(alt_reply)}</code>"
+        )
         return
 
     if data.startswith("good:"):
